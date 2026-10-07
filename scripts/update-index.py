@@ -14,7 +14,7 @@ def main() -> int:
     try:
         commits = subprocess.check_output(
             [
-                "git", "-C", str(root), "log", "--reverse",
+                "git", "-C", str(root), "log",
                 "--format=%H%x00%ad%x00%s", "--date=format:%-d %B %Y",
                 f"{START_COMMIT}^..HEAD",
             ],
@@ -27,6 +27,9 @@ def main() -> int:
     groups: dict[str, list[tuple[str, list[str]]]] = {}
     for line in commits.splitlines():
         commit, date, subject = line.split("\0", maxsplit=2)
+        if not subject.startswith("docs:"):
+            continue
+
         changed_files = subprocess.check_output(
             [
                 "git", "-C", str(root), "diff-tree", "--no-commit-id",
