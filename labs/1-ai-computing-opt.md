@@ -51,7 +51,7 @@ Work through the exercises in order. Starter functions contain TODOs; keep their
 
 ## 1. Get set up and find your way around
 
-The C exercises, tests, and benchmarks do not require PyTorch or Python packages. Optional CSV/plot helpers use the Python standard library.
+Project structure:
 
 ```text
 lab1
