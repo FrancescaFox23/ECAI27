@@ -51,6 +51,24 @@ Work through the exercises in order. Starter functions contain TODOs; keep their
 
 ## 1. Get set up and find your way around
 
+### Download the starter code
+
+Log in to your Raspberry Pi, either over SSH or a Tunnel, and open a terminal.  
+Download and extract the starter archive, then move into the `lab1/` directory
+to work on the exercises:
+
+```bash
+wget https://valentinopeluso.github.io/ECAI27/assets/downloads/lab1.zip
+unzip lab1.zip
+cd lab1
+code .
+```
+
+You can also [download the lab 1 code](../assets/downloads/lab1.zip) from this
+page.   
+Edit and build the code on the Raspberry Pi so the ARM NEON and OpenMP
+examples can use the Pi's hardware and toolchain.
+
 Project structure:
 
 ```text
