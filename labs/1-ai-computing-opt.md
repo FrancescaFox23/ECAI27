@@ -43,7 +43,7 @@ Work through the exercises in order. Starter functions contain TODOs; keep their
 | Stage | Kernel / workload | Variants and optimization studied |
 |---|---|---|
 | 1 | Vector addition | Scalar baseline; explicit NEON vector load, add, store, and tail handling. Observe a simple memory-bound workload. |
-| 2 | Sum reduction | Scalar reference; NEON SIMD reduction; NEON plus OpenMP. Study horizontal reduction, partial sums, and intra-core versus multi-core parallelism. |
+| 2 | Sum reduction | Scalar reference; NEON SIMD reduction. Study horizontal reduction and partial sums. |
 | 3 | GEMV (`y = Ax`) | Scalar dot product; NEON vector accumulation and reduction. Study reuse of the input vector and weights. |
 | 4 | GEMM (`C = AB`) | Scalar GEMM; educational loop-blocked GEMM with tile sizes 4, 8, 16, and 32. Study cache working sets and data reuse. |
 | 5 | Batched GEMM | Scalar and tiled forms; optional OpenMP multi-threading over batch items or output tiles. Study shared-weight reuse, temporal/spatial tiling, and throughput versus per-item latency. |
