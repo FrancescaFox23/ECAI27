@@ -3,7 +3,7 @@ project:
 
 website:
   title: "Efficient Computing for AI"
-  description: "Course material and laboratory assignments"
+  description: "Laboratory assignments"
 
   navbar:
     title: "Efficient Computing for AI"
@@ -21,7 +21,7 @@ website:
         text: Resources
     right:
       - icon: github
-        href: https://github.com/YOUR_USERNAME/YOUR_REPOSITORY
+        href: https://github.com/ValentinoPeluso/ECAI27
         aria-label: GitHub repository
 
   sidebar:

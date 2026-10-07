@@ -79,36 +79,6 @@ The default project-site URL is:
 https://YOUR_USERNAME.github.io/YOUR_REPOSITORY/
 ```
 
-## 8. Use OpenCode
-
-Start OpenCode from the repository root so that it can read `AGENTS.md`:
-
-```bash
-opencode
-```
-
-Useful requests include:
-
-```text
-Create Lab 03 on post-training quantization following the structure of Lab 01.
-```
-
-```text
-Rewrite the introduction of Lecture 02 for graduate students. Preserve all technical claims.
-```
-
-```text
-Audit the Labs section for broken relative links and inconsistent terminology. Fix only documentation issues.
-```
-
-```text
-Add this new page to the appropriate sidebar section and run Quarto validation.
-```
-
-## 9. Public vs. instructor-only content
-
-Keep student-facing material in this public repository. Put answer keys, grading rubrics that should remain private, and instructor notes in a separate private repository.
-
 ## Recommended authoring convention
 
 Use `.md` for normal content:
