@@ -5,5 +5,10 @@ subtitle: "LAB Material and Assignments"
 
 ## 7 October 2026
 
-- Organized course pages under Setup, Labs, and Resources.
-- Added the Raspberry Pi setup guide and Lab 1 handout.
+- **docs: organize course pages and add lab setup**
+  - [labs/1-ai-computing-opt.md](labs/1-ai-computing-opt.md)
+  - [labs/index.md](labs/index.md)
+  - [labs/schedule.md](labs/schedule.md)
+  - [resources/index.md](resources/index.md)
+  - [setup/index.md](setup/index.md)
+  - [setup/rpi-kit.md](setup/rpi-kit.md)
