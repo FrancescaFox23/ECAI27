@@ -12,3 +12,5 @@ subtitle: "LAB Material and Assignments"
   - [resources/index.md](resources/index.md)
   - [setup/index.md](setup/index.md)
   - [setup/rpi-kit.md](setup/rpi-kit.md)
+- **fix**
+  - [labs/1-ai-computing-opt.md](labs/1-ai-computing-opt.md)
