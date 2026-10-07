@@ -1,0 +1,69 @@
+project:
+  type: website
+
+website:
+  title: "Efficient Computing for AI"
+  description: "Course material and laboratory assignments"
+
+  navbar:
+    title: "Efficient Computing for AI"
+    search: true
+    left:
+      - href: index.md
+        text: Home
+      - href: lectures/index.md
+        text: Lectures
+      - href: labs/index.md
+        text: Labs
+      - href: projects/index.md
+        text: Projects
+      - href: resources/index.md
+        text: Resources
+    right:
+      - icon: github
+        href: https://github.com/YOUR_USERNAME/YOUR_REPOSITORY
+        aria-label: GitHub repository
+
+  sidebar:
+    style: docked
+    search: true
+    contents:
+      - section: "Lectures"
+        contents:
+          - lectures/index.md
+          - lectures/01-course-overview.md
+          - lectures/02-example-topic.md
+
+      - section: "Labs"
+        contents:
+          - labs/index.md
+          - labs/lab01-example/index.md
+          - labs/lab02-example/index.md
+
+      - section: "Projects"
+        contents:
+          - projects/index.md
+
+      - section: "Resources"
+        contents:
+          - resources/software.md
+          - resources/references.md
+
+  page-footer:
+    left: "Efficient Computing for AI"
+    right: "Course material"
+
+format:
+  html:
+    theme:
+      - cosmo
+      - assets/course.scss
+    toc: true
+    code-copy: true
+    code-fold: false
+    smooth-scroll: true
+
+# Keep this project Markdown-first.
+# Switch individual pages to .qmd only when executable content is needed.
+execute:
+  freeze: auto
