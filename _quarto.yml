@@ -9,14 +9,10 @@ website:
     title: "Efficient Computing for AI"
     search: true
     left:
-      - href: index.md
-        text: Home
-      - href: lectures/index.md
-        text: Lectures
+      - href: setup/index.md
+        text: Setup
       - href: labs/index.md
         text: Labs
-      - href: projects/index.md
-        text: Projects
       - href: resources/index.md
         text: Resources
     right:
@@ -28,36 +24,26 @@ website:
     style: docked
     search: true
     contents:
-      - section: "Lectures"
+      - href: setup/index.md
+        text: Setup
         contents:
-          - lectures/index.md
-          - lectures/01-course-overview.md
-          - lectures/02-example-topic.md
+          - setup/rpi-kit.md
 
-      - section: "Labs"
+      - href: labs/index.md
+        text: Labs
         contents:
-          - labs/index.md
-          - labs/lab01-example/index.md
-          - labs/lab02-example/index.md
+          - labs/schedule.md
+          - labs/1-ai-computing-opt.md
 
-      - section: "Projects"
-        contents:
-          - projects/index.md
-
-      - section: "Resources"
-        contents:
-          - resources/software.md
-          - resources/references.md
+      - href: resources/index.md
+        text: Resources
 
   page-footer:
     left: "Efficient Computing for AI"
-    right: "Course material"
+    right: "Lab material"
 
 format:
   html:
-    theme:
-      - cosmo
-      - assets/course.scss
     toc: true
     code-copy: true
     code-fold: false

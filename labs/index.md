@@ -1,17 +1,13 @@
 ---
-title: "Laboratory Activities"
+title: "Labs"
 ---
 
-Labs are designed to be self-contained. Each lab should clearly separate **setup**, **tasks**, and **expected results**.
+Browse the lab schedule and the AI Computing Optimization assignment.
 
-## Lab 01 — Example
+## Lab Schedule
 
-A minimal Markdown-first lab template.
+[View the lab schedule](schedule.md).
 
-[Open Lab 01 →](lab01-example/index.md)
+## 1. AI Computing Optimization
 
-## Lab 02 — Example
-
-A second placeholder lab showing a more structured assignment.
-
-[Open Lab 02 →](lab02-example/index.md)
+[Open the lab](1-ai-computing-opt.md).
