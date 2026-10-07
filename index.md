@@ -1,6 +1,6 @@
 ---
 title: "Efficient Computing for AI"
-subtitle: "Course material, laboratory assignments, and resources"
+subtitle: "LAB Material and Assignments"
 ---
 
 Welcome to the course website.
