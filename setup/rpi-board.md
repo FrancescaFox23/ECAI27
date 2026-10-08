@@ -18,7 +18,7 @@ You will also need a laptop with **Visual Studio Code** (VS Code) installed. The
 
 For the first two lab sessions, we'll use only the RPI board; the sensors will be used later.
 
-![Raspberry Pi kit components shown in the lab slides](../assets/images/rpi-kit/setup-7.png)
+![Raspberry Pi kit components](../assets/images/rpi-kit/setup-7.png)
 
 ## Connect and start the Raspberry Pi
 
@@ -81,6 +81,56 @@ Hello RPi!
 
 The Pi is ready for the lab when VS Code is connected over SSH and this script runs successfully.
 
+## Configure Wi-Fi
+
+Configure WiFi with NetworkManager's text interface:
+
+```bash
+sudo nmtui
+```
+
+Use the arrow keys and Enter to navigate.
+
+![NetworkManager menu: select “Edit a connection”](../assets/images/rpi-kit/wifi-nmtui-menu.png)
+
+### Connect to eduroam
+
+1. Select **Edit a connection**, then **Add**, then **Wi-Fi**.
+2. Set **Profile name** and **SSID** to `eduroam`.
+3. Set **Security** to **WPA & WPA2 Enterprise** and **Authentication** to **PEAP**.
+4. Enter your student email address as the **Anonymous identity**.
+5. Enter your eduroam username and password in the corresponding fields.
+6. Select **OK** to save the profile.
+
+   ![eduroam connection settings in NetworkManager](../assets/images/rpi-kit/wifi-eduroam-settings.png)
+
+   ![eduroam username and password fields](../assets/images/rpi-kit/wifi-eduroam-credentials.png)
+
+7. Return to the main menu, select **Activate a connection**, choose `eduroam`, and activate it.
+
+   ![Select and activate the eduroam connection](../assets/images/rpi-kit/wifi-activate-eduroam.png)
+
+8. Exit `nmtui` with `Esc` and test connectivity:
+
+   ```bash
+   ping google.com
+   ```
+
+   Stop the test with `Ctrl+C`.
+
+   ![Successful connectivity test from the Pi terminal](../assets/images/rpi-kit/wifi-connectivity-test.png)
+
+### Connect to a personal Wi-Fi network or mobile hotspot
+
+If eduroam is unavailable, a personal Wi-Fi network or mobile hotspot can be configured in `nmtui`. Some exercises may require a mobile hotspot while working in class.
+
+1. Select **Edit a connection → Add → Wi-Fi**.
+2. Set **Profile name** and **SSID** to the network name.
+3. Set **Security** to **WPA & WPA2 Personal** and enter the network password.
+4. Select **OK** to save the profile.
+5. Select **Activate a connection**, choose the profile, and activate it.
+6. Exit `nmtui` with `Esc`.
+
 ## Set up a persistent VS Code tunnel
 
 A VS Code tunnel lets you connect to the Raspberry Pi remotely without connecting through the ethernet cable.
@@ -135,41 +185,3 @@ On the computer you want to work from:
 7. Once connected, open a folder on the Pi or open a terminal in the remote window to work with your files.
 
 The tunnel connection works while the Raspberry Pi is powered on and connected to a Wi-Fi network with internet access. If the Pi is offline or has no Wi-Fi/internet connection, the PC cannot reach its tunnel.
-
-## Configure Wi-Fi (when needed)
-
-The Ethernet connection is sufficient for the initial setup. Some in-class exercises require Wi-Fi, so configure an available network from the Raspberry Pi terminal with NetworkManager's text interface:
-
-```bash
-sudo nmtui
-```
-
-Use the arrow keys and Enter to navigate.
-
-### Connect to eduroam
-
-1. Select **Edit a connection**, then **Add**, then **Wi-Fi**.
-2. Set **Profile name** and **SSID** to `eduroam`.
-3. Set **Security** to **WPA & WPA2 Enterprise** and **Authentication** to **PEAP**.
-4. Enter your student email address as the **Anonymous identity**.
-5. Enter your eduroam username and password in the corresponding fields.
-6. Select **OK** to save the profile.
-7. Return to the main menu, select **Activate a connection**, choose `eduroam`, and activate it.
-8. Exit `nmtui` with `Esc` and test connectivity:
-
-   ```bash
-   ping google.com
-   ```
-
-   Stop the test with `Ctrl+C`.
-
-### Connect to a personal Wi-Fi network or mobile hotspot
-
-If eduroam is unavailable, a personal Wi-Fi network or mobile hotspot can be configured in `nmtui`. Some exercises may require a mobile hotspot while working in class.
-
-1. Select **Edit a connection → Add → Wi-Fi**.
-2. Set **Profile name** and **SSID** to the network name.
-3. Set **Security** to **WPA & WPA2 Personal** and enter the network password.
-4. Select **OK** to save the profile.
-5. Select **Activate a connection**, choose the profile, and activate it.
-6. Exit `nmtui` with `Esc`.
