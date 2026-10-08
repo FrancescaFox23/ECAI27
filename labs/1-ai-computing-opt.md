@@ -2,6 +2,11 @@
 title: "1. AI Computing Optimization"
 ---
 
+:::{.callout-note}
+We will work on this lab assignment during both the **8 October** and **22 October** sessions.  
+You're expected to complete all excercises before the **29 October**, in which *Homework #1* will be assigned. 
+:::
+
 ## Learning objectives
 
 - Learn and understand the main optimizations for processing AI layers efficiently, such as SIMD, parallelism, data reuse, and tiling.
@@ -862,3 +867,25 @@ SIMD, parallelism, data reuse, memory traffic, tiling, and fusion are relevant t
 ## Take-home message
 
 The final lesson is: **efficient AI software is not only about reducing FLOPs; it is also about arranging computation and data so that the hardware can do useful work efficiently.**
+
+## External Resources (optional, not needed for homework/exam)
+
+### Videos
+- [Advanced Optimizations for Matrix Multiplication](https://www.youtube.com/watch?v=6AVEPOqJfOk)
+- ["Optimizing Embedded Deep Learning Inference Software," a Presentation from Arm](https://www.youtube.com/watch?v=Rv9ZmWMP3n8)
+- ["Even Faster CNNs: Exploring the New Class of Winograd Algorithms," a Presentation from Arm](https://www.youtube.com/watch?v=6lvzMB56Jnc)
+- [Using SGEMM and FFTs to Accelerate Deep Learning](https://www.youtube.com/watch?v=v5kAAjW17U4)
+
+### Suggested Readings 
+- [The Indirect Convolution Algorithm](https://arxiv.org/abs/1907.02129)
+- [Fast Sparse ConvNets](https://arxiv.org/abs/1911.09723)
+- [The Two-Pass Softmax Algorithm](https://arxiv.org/abs/2001.04438)
+- [High Performance and Portable Convolution Operators for ARM-based Multicore Processors](https://arxiv.org/pdf/2005.06410)
+- [nDirect2: A High-Performance Library for Direct Convolutions on Multicore CPUs](https://ieeexplore.ieee.org/abstract/document/10892335/)
+- [Efficient Memory Management for Deep Neural Net Inference](https://arxiv.org/abs/2001.03288)
+
+### Micro-kernel Libraries
+- [FBGEMM](https://github.com/pytorch/FBGEMM)
+- [XNNPACK](https://github.com/google/xnnpack)
+- [KleidiAI](https://github.com/ARM-software/kleidiai)
+- [CMSIS-NN](https://github.com/ARM-software/CMSIS-NN)

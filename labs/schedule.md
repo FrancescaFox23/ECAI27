@@ -4,7 +4,7 @@ title: "Lab Schedule"
 ## Labs
 | Date | Day | Time | Room | Topic |
 | --- | --- | --- | --- | --- |
-| 8 October 2026 | Thursday | 16:00–19:00 | 13 | AI Computing Optimization (Part 1)|
+| 8 October  | Thursday | 16:00–19:00 | 13 | AI Computing Optimization (Part 1)|
 | 22 October | Thursday | 16:00–19:00 | 13 | AI Computing Optimization (Part 2) |
 | 29 October | Thursday | 16:00–19:00 | 13 | Homework 1 - Introduction |
 | 5 November | Thursday | 16:00–19:00 | 13 | Homework 1 - Group work |

@@ -32,6 +32,7 @@ website:
       - href: labs/index.md
         text: Labs
         contents:
+          - labs/overview.md
           - labs/schedule.md
           - labs/1-ai-computing-opt.md
 
