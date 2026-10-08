@@ -275,7 +275,7 @@ The scalar version is `src/vector_add/vector_add.c`.
 
 Open the file and complete the loop iteration code.
 
-### Build
+### Build Scalar Code
 
 You can build the code by running the command below from the terminal:
 
@@ -290,6 +290,7 @@ gcc -O0 -Wall -Wextra -std=c11 -mcpu=cortex-a72 -Iinclude -c src/vector_add/vect
 ```
 
 Specifically:
+
 - `gcc`: compile C code;
 - `-O0`: optimization level; disables compiler optimizations.;
 - `-mcpu=cortex-a72`: tune for the Pi 4 CPU;
@@ -297,8 +298,8 @@ Specifically:
 - `-lm`: (optional) link the math library when needed;
 
 
-### Bencmarking
-The compilation produces the benchmarking executable  `./vector-add/benchmark`.
+### Bencmark Scalar Code
+The compilation produces the benchmarking executable  `./src/vector-add/benchmark`.
 
 The C benchmark programs use dimensions defined as constants near the start of the `main` function. To measure a different size, edit the corresponding   onstants, save the file, rebuild that target, and run it again. 
 
@@ -307,7 +308,7 @@ For vector addition, change `n` in `src/vector_add/benchmark.c` with values of  
 ```bash
 # Edit n in src/vector_add/benchmark.c, then:
 make vector_add
-./vector-add/benchmark
+srcvector-add/benchmark
 ```
 
 Collect the reported results (e.g., in a CSV file or a Sheet) for later comparisons.
@@ -352,9 +353,9 @@ Build and run the correctness tests.
 
 ```bash
 make src/vector_add/test_kernel
-./vector_add/test_kernel
+./src/vector_add/test_kernel
 ```
-### Benchmarking
+### Benchmark Optmized Code
 
 Before measuring, calculate:
 
@@ -364,9 +365,7 @@ Before measuring, calculate:
 
 For vector addition,
 
-\[
-y_i = a_i + b_i,
-\]
+$y_i = a_i + b_i$,
 
 so each element requires one floating-point addition. The computation reads
 two FP32 values and writes one FP32 result.
@@ -374,10 +373,10 @@ two FP32 values and writes one FP32 result.
 Then run the benchmarking with:
 ```bash
 make vector_add
-./vector-add/benchmark
+srcvector-add/benchmark
 ```
 
-Collect the benchmarking results in this table
+Collect the benchmarking results in the table below:
 
 | N | Scalar time | NEON time | Speedup |
 |---:|---:|---:|---:|
@@ -388,7 +387,7 @@ Collect the benchmarking results in this table
 :::{.callout-warning}
 **Think about the speedup.**
 
-NEON can process four FP32 values per instruction, but this does not necessarily result in a 4× end-to-end speedup. Consider the amount of memory traffic and the fact that vector addition performs very little computation per byte transferred.
+NEON can process four FP32 values per instruction, but this does not guarantee a 4× end-to-end speedup. Consider the operation intensity.
 :::
 
 ## 2. Sum reduction
@@ -412,16 +411,16 @@ For `n == 0`, return zero.
 
 Then, implement the SIMD version in `reduce_sum_neon.c`. 
 
-:::{.callout-hint}
-Accumulate groups of four values in a `float32x4_t` variable.  
-Then, aggregates the partial sums in the four lanes to a scalar.  
-Finally, handle remaining elements with a scalar tail.
+:::{.callout-tip}
+- Accumulate groups of four values in a `float32x4_t` variable.  
+- Aggregates the partial sums in the four lanes to a scalar.  
+- Finally, handle remaining elements with a scalar tail.
 :::
 
 Test the correctenss of the optmized version:
 ```bash
 make src/reduce_sum/test_kernel
-./reduce_sum/test_kernel
+./src/reduce_sum/test_kernel
 ```
 
 The test includes lengths that are shorter than a NEON vector, divisible by four, and have a SIMD tail. 
@@ -434,7 +433,7 @@ Build and run the benchmark (scalar and SIMD):
 
 ```bash
 make reduce_sum
-./reduce_sum/benchmark
+./src/reduce_sum/benchmark
 ```
 
 Given that for an input of `n` FP32 values, the reduction performs `n-1` additions and reads `4*n` bytes of input data, estimate the operational intensity and discuss the collected results.
@@ -448,9 +447,7 @@ Given that for an input of `n` FP32 values, the reduction performs `n-1` additio
 
 Matrix-vector multiplication, or **GEMV**, computes
 
-\[
-y = Ax,
-\]
+$y = Ax$,
 
 where
 
@@ -460,9 +457,7 @@ A: [M,K]   x: [K]   y: [M]
 
 and each output element is a dot product:
 
-\[
-y_i = \sum_{j=0}^{K-1} A_{i,j}x_j.
-\]
+$y_i = \sum_{j=0}^{K-1} A_{i,j}x_j$.
 
 The matrix is stored as a flat row-major array. Therefore,
 
@@ -477,12 +472,14 @@ while `x[j]` is the `j`-th element of the input vector and `y[i]` is the
 
 Implement `gemv_scalar` in `src/gemv/gemv.c`.
 
+::: {.callout-tip}
 For each matrix row:
 
 1. initialize a scalar accumulator to zero;
 2. multiply each matrix element by the corresponding element of `x`;
 3. add the product to the accumulator; and
 4. store the final sum in `y[i]`.
+:::
 
 The resulting computation is:
 
@@ -494,16 +491,13 @@ for each row i:
     y[i] = sum
 ```
 
-This scalar implementation is the baseline for both correctness and
-performance comparisons.
+This scalar implementation is the baseline for both correctness and performance comparisons.
 
 ### SIMD optimization
 
 Implement `gemv_neon` in `src/gemv/gemv_neon.c`.
 
-Each output element is a dot product, which makes GEMV a natural candidate for
-SIMD. Instead of processing one pair of values at a time, process four
-matrix/vector pairs simultaneously:
+Each output element is a dot product, which makes GEMV a natural candidate for  SIMD. Instead of processing one pair of values at a time, process four matrix/vector pairs simultaneously:
 
 ```text
 A[i,j : j+3]   ×   x[j : j+3]
@@ -518,13 +512,10 @@ A[i,j : j+3]   ×   x[j : j+3]
       y[i]
 ```
 
-Use a `float32x4_t` accumulator and the NEON intrinsics introduced earlier.
-After processing groups of four columns, horizontally add the four lanes to
-obtain the scalar result for the current row.
+Use a `float32x4_t` accumulator and the NEON intrinsics introduced earlier. After processing groups of four columns, horizontally add the four lanes to obtain the scalar result for the current row.
 
 :::{.callout-tip}
-**Handle the tail:** `K` may not be a multiple of four. After the SIMD loop,
-process the remaining columns with a scalar loop.
+**Handle the tail:** `K` may not be a multiple of four. After the SIMD loop, process the remaining columns with a scalar loop.
 :::
 
 ### Test
@@ -551,15 +542,9 @@ The benchmark uses `M=K=64`.
 
 For GEMV, each output performs `K` multiplications and `K-1` additions. For a simple FLOP estimate, count one multiplication and one addition as two operations per matrix element:
 
-\[
-\mathrm{FLOPs} \approx 2MK.
-\]
+$\mathrm{FLOPs} \approx 2MK$.
 
-For `M=K=64`:
-
-\[
-\mathrm{FLOPs} \approx 2\cdot64\cdot64 = 8192.
-\]
+For `M=K=64`, $\mathrm{FLOPs} \approx 2\cdot64\cdot64 = 8192$.
 
 The computation accesses:
 
@@ -569,17 +554,12 @@ The computation accesses:
 
 Estimate the operational intensity from these quantities.
 
-An important difference from vector addition is **data reuse**. Every element
-of `x` is used once for every row of `A`, so the same vector values participate
-in many output computations. This reuse can allow `x` to remain in a nearby
+An important difference from vector addition is **data reuse**. Every element of `x` is used once for every row of `A`, so the same vector values participate in many output computations. This reuse can allow `x` to remain in a nearby
 cache while different rows of `A` are processed.
 
 Record the median latency and calculate:
-\[
-\mathrm{GFLOP/s}
-=
-\frac{\mathrm{FLOPs}}{\mathrm{latency}}.
-\]
+
+$\mathrm{GFLOP/s} = \frac{\mathrm{FLOPs}}{\mathrm{latency}}$.
 
 Also calculate the speedup relative to the scalar implementation.
 
@@ -591,10 +571,7 @@ Also calculate the speedup relative to the scalar implementation.
 :::{.callout-warning}
 **Think about the speedup.**
 
-NEON processes four FP32 values in parallel, but GEMV is not simply four times
-faster. Each output requires a reduction across the SIMD lanes, and the
-computation also moves matrix data through the memory hierarchy. Consider how
-these effects limit the observed speedup.
+NEON processes four FP32 values in parallel, but GEMV is not simply four times faster. Each output requires a reduction across the SIMD lanes, and the computation also moves matrix data through the memory hierarchy. Consider how these effects limit the observed speedup.
 :::
 
 
@@ -605,13 +582,7 @@ these effects limit the observed speedup.
 **Files to complete:** `gemm.c`, `gemm_tiled.c`
 :::
 
-Matrix-matrix multiplication, or **GEMM**, computes
-
-\[
-C = AB,
-\]
-
-where
+Matrix-matrix multiplication, or **GEMM**, computes $C = AB$, where
 
 ```text
 A: [M,K]   B: [K,N]   C: [M,N]
@@ -619,9 +590,7 @@ A: [M,K]   B: [K,N]   C: [M,N]
 
 and
 
-\[
-C_{i,j} = \sum_{q=0}^{K-1} A_{i,q}B_{q,j}.
-\]
+$C_{i,j} = \sum_{q=0}^{K-1} A_{i,q}B_{q,j}$.
 
 The matrices are stored in row-major order:
 
@@ -654,14 +623,10 @@ For an `M × K` matrix multiplied by a `K × N` matrix, the computation requires
 
 ### Tiling optimization
 
-GEMM repeatedly accesses the same matrix elements while
-computing different output elements. **Tiling**, also called blocking, divides
-the matrices into smaller submatrices so that the currently active data fits
-better in the cache.
+GEMM repeatedly accesses the same matrix elements while computing different output elements. **Tiling**, also called blocking, divides
+the matrices into smaller submatrices so that the currently active data fits better in the cache.
 
-Instead of considering the entire matrices at once, divide the three
-dimensions into blocks. For example, a tile of `C` is updated using a tile of
-`A` and a tile of `B`:
+Instead of considering the entire matrices at once, divide the three dimensions into blocks. For example, a tile of `C` is updated using a tile of `A` and a tile of `B`:
 
 ```text
 A tile          B tile          C tile
@@ -670,16 +635,12 @@ A tile          B tile          C tile
 └─────┘         └─────┘         └─────┘
 ```
 
-Within a tile, values from `A` and `B` can be reused for several output
-elements before they are replaced by another tile. The `C` tile is updated
-across multiple blocks of the reduction dimension.
+Within a tile, values from `A` and `B` can be reused for several output elements before they are replaced by another tile. The `C` tile is updated across multiple blocks of the reduction dimension.
 
-Implement `gemm_tiled` in `src/gemm/gemm_tiled.c` by dividing the `M`, `N`,
-and `K` dimensions into tiles.
+Implement `gemm_tiled` in `src/gemm/gemm_tiled.c` by dividing the `M`, `N`, and `K` dimensions into tiles.
 
 :::{.callout-hint}
-The matrix dimensions might not be multiples of the tile size. Clamp the
-end of each tile to the corresponding matrix dimension, for example:
+The matrix dimensions might not be multiples of the tile size. Clamp the end of each tile to the corresponding matrix dimension, for example:
 
 ```c
 i_end = min(ii + tile, M);
@@ -712,7 +673,7 @@ First benchmark the scalar implementation. Then compare the tiled implementation
 
 The benchmark uses a tile-size constant defined near the beginning of `src/gemm/benchmark.c`. Change this value, rebuild, and run the benchmark for each configuration.
 
-For GEMM, we have approximately \[2MKN\] FLOPs.
+For GEMM, we have approximately $2MKN$ FLOPs.
 Estimate the data movement of the tiled implementation and compare it with the baseline implementation. Discuss how tiling increases data reuse. 
 
 Record the benchmark results:
@@ -755,8 +716,7 @@ A: [B,M,K]   W: [K,N]   Y: [B,M,N]
 Y[b,i,j] = sum(k=0..K-1) A[b,i,k] * W[k,j]
 ```
 
-Here, `B` is the batch size. Each batch element has its own input matrix
-`A[b]`, while all batch elements use the same weight matrix `W`.
+Here, `B` is the batch size. Each batch element has its own input matrix `A[b]`, while all batch elements use the same weight matrix `W`.
 
 This structure exposes two important opportunities for optimization:
 
@@ -779,7 +739,7 @@ for b:
 
 The total computational work is approximately \[2BMKN\] FLOPs.
 
-Implement the code of `gemm_batched_scalar` in `/src/gemm/batched_gemm.c`. 
+Implement the code of `gemm_batched_scalar` in `./src/gemm/batched_gemm.c`. 
 
 Then, build and run the benchmark:
 
@@ -862,11 +822,9 @@ Measure the following configurations for each batch size:
 - OpenMP over batch items; and
 - OpenMP over output tiles.
 
-Use `B = 1, 4, 16, 64` and compare one, two, and four OpenMP threads for the
-parallel implementations.
+Use `B = 1, 4, 16, 64` and compare one, two, and four OpenMP threads for the parallel implementations.
 
-Record the median latency, calculate GFLOP/s, and calculate the speedup
-relative to the scalar implementation.
+Record the median latency, calculate GFLOP/s, and calculate the speedup relative to the scalar implementation.
 
 | B | Method | Threads | Tile | Latency (µs) | GFLOP/s | Speedup vs scalar | Observation |
 |---:|---|---:|---:|---:|---:|---:|---|
