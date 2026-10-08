@@ -27,7 +27,7 @@ website:
       - href: setup/index.md
         text: Setup
         contents:
-          - setup/rpi-kit.md
+          - setup/rpi-board.md
 
       - href: labs/index.md
         text: Labs
