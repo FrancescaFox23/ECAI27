@@ -71,38 +71,32 @@ Schematically:
 
 As you can see from the scheme above, also the language at which micro-kernels are written may change: typicilly C or assembly for CPU backends, CUDA for NVIDIA GPU backend.
 
-In this lab, we will focus on the ARM CPU backend, specifically the Cortex-A73 architecture, which is mounted on the Raspberry Pi.
+In this lab, our target is the Raspberry Pi CPU, which is a 64-bit ARM Cortex-A73 architecture.
 
-Micro-kernels are often manually designed following the optimizations discussed during the lectures (and many others not covered in this course). Their code is also often hand-crafted to fully exploit the available arithmetic units and memory hierarchy, using more aggressive and hardware-specific optimizations than a compiler can typically apply automatically.
+Micro-kernels are often manually designed following the optimizations discussed during the lectures (and many others not covered in this course). Their code is also often hand-crafted to fully exploit the available arithmetic units and memory hierarchy, using more aggressive and hardware-specific optimizations than a compiler can typically apply automaticalyly.
 
 
-### Main HW Features
-The Raspberry Pi 4 uses the Broadcom BCM2711 with four 64-bit Arm Cortex-A72 cores. Each core has a 32 KiB data L1 cache and 48 KiB instruction L1 cache, while the Cortex-A72 cluster has a 1 MiB L2 cache. Main memory is LPDDR4 SDRAM. The Cortex-A72 cores also embed the NEON unit: a 128-bit **Single instruction, multiple data (SIMD)** execution unit that can process multiple data elements in parallel, e.g., four FP32 values with a single instruction. For example:
+### Compute Units and Memory Hierarch
+The Raspberry Pi 4 hosts the Broadcom BCM2711 CPU, which is based on quad-core 64-bit Arm Cortex-A73 architecture. Each core has a 32 KiB data L1 cache and 48 KiB instruction L1 cache, and a 1 MiB L2 cache is shared across the four cores. The main memory is LPDDR4 SDRAM. The Operating System (OS) and storage are supplied by an external SD card. 
 
-```text
-[a0 a1 a2 a3] + [b0 b1 b2 b3] -> [c0 c1 c2 c3]
-```
-
-### NEON Instruction-Set Architecture
-
-An **instruction-set architecture (ISA)** defines the instructions a processor
-can execute and the registers those instructions use. AArch64, the 64-bit Arm
-architecture used by the Pi 4, includes NEON SIMD instructions. NEON provides
-32 vector registers, each 128 bits wide. A register can therefore hold four
-FP32 values, and one vector instruction can apply an operation to all four
-lanes:
+### Instruction-level Parallelism: the NEON Architecture
+The Cortex-A73 cores also include the NEON extension, which is an advanced Single Instruction Multiple Data (SIMD) unit. NEON provides 32 vector registers, each 128 bits wide. A register can therefore hold four FP32 values, and one vector instruction can process four values in parallel. For example, it is possible to process 4 additions with a single instruction:
 
 ```text
 [a0 a1 a2 a3] + [b0 b1 b2 b3] -> [a0+b0 a1+b1 a2+b2 a3+b3]
 ```
 
-In C, we use **NEON intrinsics**: functions that describe vector operations
-and are compiled into the corresponding machine instructions. For example,
-`vld1q_f32` loads four adjacent FP32 values, `vaddq_f32` adds two vectors, and
-`vst1q_f32` stores the result. The `q` indicates a 128-bit vector. A loop must
-also handle any elements left over after processing groups of four; these are
-called the **tail**. The quick reference and exercises below use these
-intrinsics directly.
+In many cases, the compiler is able to infer operations that can be parallelized with SIMD execution from plain C code.  
+However, programmers can force the usage of SIMD instructions using the **NEON intrinsics**: hardware-specific functions with C interface that describe vector operations and are compiled into the corresponding SIMD instructions. Explicit NEON programming throguh instrinsics is useful when the compiler fails to detect instruction-level-parallelsim opportunities.
+
+Another alternative is to manually write assembly code (as often done in production-level microkernels), which however we will not cover in the labs.
+
+For example, functions that we will use in the exercises are:
+- `vld1q_f32` loads four adjacent FP32 values
+- `vaddq_f32` adds two vectors of four FP32 values
+- `vst1q_f32` stores the result. 
+
+The `q` indicates a 128-bit vector. 
 
 ### Multi-Core Parallelism
 NEON uses multiple data lanes within one core. To use multiple cores, we can
