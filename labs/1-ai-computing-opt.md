@@ -11,7 +11,7 @@ title: "1. AI Computing Optimization"
 
 ## Introduction
 
-In PyTorch, neural layers are provided as high-level functions or classes. For instance, matrix-to-vector multiplication and matrix multiplication can be exectued with the `torch.matmul` function. However, these functions are not implemented with Python code, otherwise they would be highly inefficient. Instead, the high-level Python API  dispatches the computation to optimized low-level
+In PyTorch, neural layers are provided as high-level functions or classes. For instance, matrix-to-vector multiplication and matrix multiplication can be executed with the `torch.matmul` function. However, these functions are not implemented with Python code, otherwise they would be highly inefficient. Instead, the high-level Python API dispatches the computation to optimized low-level
 implementations, called **micro-kernels**. A micro-kernel is a small, specialized piece of computation designed to maximize use of the hardware execution resources. Different hardware architectures may require different implementations of the same mathematical operation. The PyTorch runtime therefore selects an implementation appropriate for the target processor.
 
 Schematically:
@@ -33,7 +33,7 @@ Schematically:
    or assembly     or assembly
 ```
 
-As you can see from the scheme above, also the language at which micro-kernels are written may change: typicilly C or assembly for CPU backends, CUDA for NVIDIA GPU backend.
+As you can see from the scheme above, the language in which micro-kernels are written may also change: typically C or assembly for CPU backends, CUDA for NVIDIA GPU backends.
 
 In this lab, our target is the Raspberry Pi CPU, which is a 64-bit ARM Cortex-A72 architecture.
 
@@ -70,7 +70,7 @@ These operations are independent, so the CPU can execute parts of them concurren
 
 ### SIMD: the NEON Architecture
 SIMD (Single Instruction, Multiple Data) allows a single instruction to operate on multiple values at once. 
-The Cortex-A72 cores also provides an hardware extension for SIMD processing: the NEON architecture. NEON provides 32 vector registers, each 128 bits wide. A register can therefore hold four FP32 values, and one vector instruction can process four values in parallel. For example, it is possible to process 4 additions with a single instruction:
+The Cortex-A72 cores also provide a hardware extension for SIMD processing: the NEON architecture. NEON provides 32 vector registers, each 128 bits wide. A register can therefore hold four FP32 values, and one vector instruction can process four values in parallel. For example, it is possible to process 4 additions with a single instruction:
 
 ```text
 [a0 a1 a2 a3] + [b0 b1 b2 b3] -> [a0+b0 a1+b1 a2+b2 a3+b3]
@@ -296,7 +296,7 @@ Specifically:
 - `-lm`: (optional) link the math library when needed;
 
 
-### Bencmark Scalar Code
+### Benchmark Scalar Code
 The compilation produces the benchmarking executable  `./src/vector-add/benchmark`.
 
 The C benchmark programs use dimensions defined as constants near the start of the `main` function. To measure a different size, edit the corresponding   onstants, save the file, rebuild that target, and run it again. 
@@ -353,7 +353,7 @@ Build and run the correctness tests.
 make src/vector_add/test_kernel
 ./src/vector_add/test_kernel
 ```
-### Benchmark Optmized Code
+### Benchmark Optimized Code
 
 Before measuring, calculate:
 
@@ -415,7 +415,7 @@ Then, implement the SIMD version in `reduce_sum_neon.c`.
 - Finally, handle remaining elements with a scalar tail.
 :::
 
-Test the correctenss of the optmized version:
+Test the correctness of the optimized version:
 ```bash
 make src/reduce_sum/test_kernel
 ./src/reduce_sum/test_kernel
