@@ -24,10 +24,7 @@ For the first two lab sessions, we'll use only the RPI board; the sensors will b
 
 1. Connect the Pi to your laptop with the Ethernet cable.
 2. Connect the DHT-11 sensor as described below. Check each wire before powering the Pi: incorrect wiring can damage the sensor.
-5. Connect the Pi to its power supply and wait about two minutes for it to start.
-
-
-![Raspberry Pi GPIO pinout and DHT-11 wiring from the lab slides](../assets/images/rpi-kit/setup-41.png)
+3. Connect the Pi to its power supply and wait about two minutes for it to start.
 
 ::: {.callout-warning}
 ## Shut down before disconnecting power
@@ -85,7 +82,7 @@ The Pi is ready for the lab when VS Code is connected over SSH and this script r
 
 ## Set up a persistent VS Code tunnel
 
-A VS Code tunnel lets you connect to the Raspberry Pi remotely without connecting through the ethernet cable.
+A VS Code tunnel lets you connect to the Raspberry Pi remotely without connecting through the ethernet cable. 
 
 Install VS Code on the Pi:
 

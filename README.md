@@ -26,7 +26,7 @@ with the actual repository URL.
 
 Install Quarto from:
 
-https://quarto.org/docs/get-started/
+<https://quarto.org/docs/get-started/>
 
 Then verify:
 
@@ -69,7 +69,7 @@ The included `publish.yml` workflow publishes the rendered site to a `gh-pages` 
 
 After the first workflow run, check:
 
-**GitHub repository → Settings → Pages**
+In the GitHub repository, open **Settings → Pages**.
 
 and make sure Pages is configured to use the `gh-pages` branch when GitHub has not enabled it automatically.
 

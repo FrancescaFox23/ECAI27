@@ -4,7 +4,7 @@ title: "1. AI Computing Optimization"
 
 :::{.callout-note}
 We will work on this lab assignment during both the **8 October** and **22 October** sessions.  
-You're expected to complete all excercises before the **29 October**, in which *Homework #1* will be assigned. 
+You're expected to complete all excercises before the **29 October**, in which *Homework #1* will be assigned.
 :::
 
 ## Learning objectives
@@ -61,7 +61,8 @@ Neural-network workloads are computationally intensive, but many of their operat
    within one core       within one core      across cores
 ```
 
-### Instruction-level Parallelism: 
+### Instruction-level Parallelism
+
 Instruction-level parallelism exploits independent instructions within a single CPU core.
 Modern CPUs like the Cortex-A72 can overlap the execution of multiple instructions through mechanisms such as pipelining. The basic idea is that, while one instruction is executing, later instructions can already be fetched/decoded, allowing concurrent processing of consecutive instructions. For example:
 
@@ -74,7 +75,8 @@ g = h + i;
 These operations are independent, so the CPU can execute parts of them concurrently inside one core.
 
 ### SIMD: the NEON Architecture
-SIMD (Single Instruction, Multiple Data) allows a single instruction to operate on multiple values at once. 
+
+SIMD (Single Instruction, Multiple Data) allows a single instruction to operate on multiple values at once.
 The Cortex-A72 cores also provide a hardware extension for SIMD processing: the NEON architecture. NEON provides 32 vector registers, each 128 bits wide. A register can therefore hold four FP32 values, and one vector instruction can process four values in parallel. For example, it is possible to process 4 additions with a single instruction:
 
 ```text
@@ -88,9 +90,9 @@ Another alternative is to manually write assembly code (as often done in product
 In this lab, you will use only a subset of the available NEON intrinsics, as listed below:
 
 | Intrinsic | Description |
-|---|---|
+| --- | --- |
 | `vdupq_n_f32(value)` | Initialize a vector by copying `value` into all four lanes. |
-| `vld1q_f32(address)` | Load four contiguous FP32 values from memory.  |
+| `vld1q_f32(address)` | Load four contiguous FP32 values from memory. |
 | `vst1q_f32(address, value)` | Store four FP32 lanes to contiguous memory. |
 | `vaddq_f32(a, b)` | Element-wise add four pairs of values. |
 | `vsubq_f32(a, b)` | Element-wise subtract four pairs of values. |
@@ -98,9 +100,10 @@ In this lab, you will use only a subset of the available NEON intrinsics, as lis
 | `vfmaq_f32(acc, a, b)` | Fused multiply-add in each lane: `acc[lane] += a[lane] * b[lane]`. |
 | `vaddvq_f32(value)` | Horizontally add the four FP32 lanes to produce one scalar. |
 
-The `q` in the intrinsics denotes a 128-bit vector. The NEON instrinsic C library also provides SIMD data types: for instance, `float32x4_t` holds four FP32 values. 
+The `q` in the intrinsics denotes a 128-bit vector. The NEON instrinsic C library also provides SIMD data types: for instance, `float32x4_t` holds four FP32 values.
 
 Example of usage:
+
 ```c
 #include <arm_neon.h>
 
@@ -113,7 +116,6 @@ float32x4_t p = vmulq_f32(a, b);      // multiply corresponding lanes
 float32x4_t acc = vfmaq_f32(acc, a, b); // acc += a*b, lane by lane
 float sum = vaddvq_f32(acc);          // add the four lanes into one scalar
 ```
-
 
 The following example computes four element-wise products and then accumulates the results into a vector:
 
@@ -160,20 +162,22 @@ float dot_product_4(const float *a, const float *b)
 ```
 
 Here, the final result is
+
 ```text
 5 + 12 + 21 + 32 = 70
 ```
 
 ### Multi-Core Parallelism
-Multi-core parallelism executes independent parts of the workload on different CPU cores. 
-For instance a loop such as: 
+
+Multi-core parallelism executes independent parts of the workload on different CPU cores.
+For instance a loop such as:
 
 ```c
 for (int i = 0; i < N; ++i)
     c[i] = a[i] + b[i];
 ```
 
-can be split among cores, as each iteration is independent from others. The Raspberry Pi 4 CPU has four Cortex-A72 cores, so independent work can run on up to four cores. 
+can be split among cores, as each iteration is independent from others. The Raspberry Pi 4 CPU has four Cortex-A72 cores, so independent work can run on up to four cores.
 
 Multi-core processing can be implemented with the **OpenMP** libary. It enables to parallelize loops by simply adding a directive `#pragma omp parallel for` before the loop, and the compiler distributes its iterations across threads. For example:
 
@@ -197,16 +201,17 @@ can be split across 4 threads as follows:
 Note that parallel execution has some overhead (e.g., for synchronization and communication across cores), so small loops may not become faster when split across threads.
 
 ### Memory Hierarchy
-Each core has a 32 KiB data L1 cache and 48 KiB instruction L1 cache, and a 1 MiB L2 cache is shared across the four cores. The main memory is LPDDR4 SDRAM, which is used as temporary storage for  data and instructions that are currently in use. The persistend storage hosting the operating system and user data is instead supplied by an external SD card. 
+
+Each core has a 32 KiB data L1 cache and 48 KiB instruction L1 cache, and a 1 MiB L2 cache is shared across the four cores. The main memory is LPDDR4 SDRAM, which is used as temporary storage for  data and instructions that are currently in use. The persistend storage hosting the operating system and user data is instead supplied by an external SD card.
 The memory hierarchy therefore follows a simple principle: the closer memory is to the CPU, the faster and smaller it is. A value
 that is reused while it remains in a nearby cache can be accessed faster than one that must be fetched from main memory. Consequently, performance depends not only on the number of arithmetic operations, but also on how often data is moved and reused.
 
-
 ## Exercises Overview
+
 In this lab, we'll cover a subset of optimizations used in micro-kernel design through a series of hands-on summarized below:
 
 | Stage | Micro-Kernel | Variants & Optimizations |
-|---|---|---|
+| --- | --- | --- |
 | 1 | Vector addition | Scalar baseline; SIMD instructions. |
 | 2 | Sum reduction | Scalar baseline; SIMD instructions. |
 | 3 | GEMV (`y = Ax`) | Scalar baseline; SIMD instructions. Data reuse. |
@@ -214,18 +219,19 @@ In this lab, we'll cover a subset of optimizations used in micro-kernel design t
 | 5 | Batched GEMM | Scalar and tiled forms; multi-threading over batches or output tiles. |
 | 6 | Transformer connection | Identify GEMM-like, elementwise, and reduction operations in scaled dot-product attention (discussion only). |
 
-
 ## 0. Preparation
 
 ### Download the starter code
 
 You are provided with a starter code package containing:
+
 - templates for the micro-kernels you will complete;
 - compilation and build infrastructure;
-- testing infrastructure; 
+- testing infrastructure;
 - benchmarking infrastructure.
 
 To download the starter code:
+
 1. Log in to your Raspberry Pi, either over SSH or a tunnel, and open a terminal.
 2. Download and extract the starter archive, then move into the `lab1/` directory by running the commands below in the terminal:
 
@@ -249,7 +255,7 @@ lab1
 │   └── gemm/              GEMM and batched-GEMM kernel templates
 ```
 
-Each micro-kernel folder contains kernel source files, a test program, and a benchmark program. 
+Each micro-kernel folder contains kernel source files, a test program, and a benchmark program.
 
 For each exercise, follow the same workflow:
 
@@ -264,8 +270,8 @@ For each exercise, follow the same workflow:
 
 Keep the function names, argument order, and data layouts declared in the templates.
 
-
 ## 1. Vector Addition
+
 :::{.callout-note}
 **Variants:** Scalar, SIMD  
 **Files to complete:** `vector_add.c`, `vector_add_neon.c`
@@ -273,7 +279,7 @@ Keep the function names, argument order, and data layouts declared in the templa
 
 ### Getting started
 
-Explore the project structure and search the vector addition templates. 
+Explore the project structure and search the vector addition templates.
 The scalar version is `src/vector_add/vector_add.c`.
 
 Open the file and complete the loop iteration code.
@@ -300,11 +306,11 @@ Specifically:
 - `-fopenmp`: (optional) enable an OpenMP build;
 - `-lm`: (optional) link the math library when needed;
 
-
 ### Benchmark Scalar Code
+
 The compilation produces the benchmarking executable  `./src/vector-add/benchmark`.
 
-The C benchmark programs use dimensions defined as constants near the start of the `main` function. To measure a different size, edit the corresponding   onstants, save the file, rebuild that target, and run it again. 
+The C benchmark programs use dimensions defined as constants near the start of the `main` function. To measure a different size, edit the corresponding   onstants, save the file, rebuild that target, and run it again.
 
 For vector addition, change `n` in `src/vector_add/benchmark.c` with values of  `1024`, `16384`, and `1048576`. Tehn build a run with the commands below:
 
@@ -333,17 +339,18 @@ gcc -O3 -Wall -Wextra -std=c11 -mcpu=cortex-a72 -Iinclude -S src/vector_add/vect
 ```
 
 Compare the two assembly files and look for changes in:
+
 - loop structure;
 - instruction selection;
 - register usage; and
 - SIMD/vector instructions.
-
 
 :::{.callout-note}
 **Observation:** `-O3` enables many optimizations automatically, including transformations related to loop optimization, vectorization, instruction scheduling, and data movement. We will cover only a subset of them. In the rest of the lab, we will always use `-O0` so that you can implement and measure each introduced optimization explicitly.
 :::
 
 ### Optimization
+
 Now, we will proceed with the implementation of an optimized version using SIMD.
 Complete the code of `src/vector_add/vector_add_neon.c` implementing SIMD additions using NEON intrinsics.
 
@@ -351,13 +358,15 @@ Complete the code of `src/vector_add/vector_add_neon.c` implementing SIMD additi
 **Handle the tail:** the number of elements may not be a multiple of 4. Process the remaining elements with a scalar `for` loop after the SIMD loop.
 :::
 
-### Test 
-Build and run the correctness tests. 
+### Test
+
+Build and run the correctness tests.
 
 ```bash
 make src/vector_add/test_kernel
 ./src/vector_add/test_kernel
 ```
+
 ### Benchmark Optimized Code
 
 Before measuring, calculate:
@@ -374,6 +383,7 @@ so each element requires one floating-point addition. The computation reads
 two FP32 values and writes one FP32 result.
 
 Then run the benchmarking with:
+
 ```bash
 make vector_add
 srcvector-add/benchmark
@@ -382,7 +392,7 @@ srcvector-add/benchmark
 Collect the benchmarking results in the table below:
 
 | N | Scalar time | NEON time | Speedup |
-|---:|---:|---:|---:|
+| ---: | ---: | ---: | ---: |
 | 1K | | | |
 | 16K | | | |
 | 1M | | | |
@@ -405,31 +415,34 @@ Implement a function that sums all elements of a 1D FP32 array:
 ```c
 float reduce_sum_scalar(const float *x, size_t n);
 ```
+
 ### Scalar baseline
 
 First, implement the scalar version in `reduce_sum.c`: add each element to one scalar accumulator.
-For `n == 0`, return zero. 
+For `n == 0`, return zero.
 
 ### SIMD optimization
 
-Then, implement the SIMD version in `reduce_sum_neon.c`. 
+Then, implement the SIMD version in `reduce_sum_neon.c`.
 
 :::{.callout-tip}
+
 - Accumulate groups of four values in a `float32x4_t` variable.  
 - Aggregates the partial sums in the four lanes to a scalar.  
 - Finally, handle remaining elements with a scalar tail.
 :::
 
 Test the correctness of the optimized version:
+
 ```bash
 make src/reduce_sum/test_kernel
 ./src/reduce_sum/test_kernel
 ```
 
-The test includes lengths that are shorter than a NEON vector, divisible by four, and have a SIMD tail. 
+The test includes lengths that are shorter than a NEON vector, divisible by four, and have a SIMD tail.
 
 :::{.callout-warning}
-The validation comparisons consider an error tolerance: SIMD processing changes the order of additions, which might result in a change of the last few bits. 
+The validation comparisons consider an error tolerance: SIMD processing changes the order of additions, which might result in a change of the last few bits.
 :::
 
 Build and run the benchmark (scalar and SIMD):
@@ -563,7 +576,7 @@ cache while different rows of `A` are processed.
 Complete the table below:
 
 | Variant | Latency (µs) | GFLOP/s | Speedup vs scalar |
-|---|---:|---:|---:|
+| --- | ---: | ---: | ---: |
 | Scalar | | | 1.0× |
 | NEON | | | |
 
@@ -572,7 +585,6 @@ Complete the table below:
 
 NEON processes four FP32 values in parallel, but GEMV is not simply four times faster. Each output requires a reduction across the SIMD lanes, and the computation also moves matrix data through the memory hierarchy. Consider how these effects limit the observed speedup.
 :::
-
 
 ## 4. Matrix-Matrix Multiplication (GEMM)
 
@@ -599,7 +611,7 @@ B[q,j] = b[q*N + j]
 C[i,j] = c[i*N + j]
 ```
 
-GEMM performs considerably more computation than GEMV and provides much more opportunity for **data reuse**. 
+GEMM performs considerably more computation than GEMV and provides much more opportunity for **data reuse**.
 
 ### Scalar baseline
 
@@ -644,6 +656,7 @@ The matrix dimensions might not be multiples of the tile size. Clamp the end of 
 ```c
 i_end = min(ii + tile, M);
 ```
+
 :::
 
 ### Test
@@ -673,12 +686,12 @@ First benchmark the scalar implementation. Then compare the tiled implementation
 The benchmark uses a tile-size constant defined near the beginning of `src/gemm/benchmark.c`. Change this value, rebuild, and run the benchmark for each configuration.
 
 For GEMM, we have approximately $2MKN$ FLOPs.
-Estimate the data movement of the tiled implementation and compare it with the baseline implementation. Discuss how tiling increases data reuse. 
+Estimate the data movement of the tiled implementation and compare it with the baseline implementation. Discuss how tiling increases data reuse.
 
 Record the benchmark results:
 
 | Variant / tile | Latency (µs) | GFLOP/s | Speedup vs scalar | Observation |
-|---|---:|---:|---:|---|
+| --- | ---: | ---: | ---: | --- |
 | Scalar | | | 1.0× | |
 | Tiled, T=4 | | | | |
 | Tiled, T=8 | | | | |
@@ -738,7 +751,7 @@ for b:
 
 The total computational work is approximately $2BMKN$ FLOPs.
 
-Implement the code of `gemm_batched_scalar` in `./src/gemm/batched_gemm.c`. 
+Implement the code of `gemm_batched_scalar` in `./src/gemm/batched_gemm.c`.
 
 Then, build and run the benchmark:
 
@@ -818,7 +831,7 @@ Compare performance of the different variants exploring `B = 1, 4, 16, 64`.
 Then, compile the table below:
 
 | B | Method | Threads | Tile | Latency (µs) | GFLOP/s | Speedup vs scalar | Observation |
-|---:|---|---:|---:|---:|---:|---:|---|
+| ---: | --- | ---: | ---: | ---: | ---: | ---: | --- |
 | 1 | Scalar | 1 | — | | | 1.0× | |
 | 1 | Tiled | 1 | 16 | | | | |
 | 1 | Parallel over batch | 4 | 16 | | | | |
@@ -850,7 +863,7 @@ Use the measurements to answer the following questions:
 
 Using four cores does not necessarily make the computation four times faster. The achievable speedup depends on the amount of parallel work, thread overhead, memory traffic, cache behavior, and the ability of the workload to keep all cores busy.
 :::
-```
+
 ## Transformer connection
 
 Scaled dot-product attention combines the same kernel families:
@@ -871,12 +884,14 @@ The final lesson is: **efficient AI software is not only about reducing FLOPs; i
 ## External Resources (optional, not needed for homework/exam)
 
 ### Videos
+
 - [Advanced Optimizations for Matrix Multiplication](https://www.youtube.com/watch?v=6AVEPOqJfOk)
 - ["Optimizing Embedded Deep Learning Inference Software," a Presentation from Arm](https://www.youtube.com/watch?v=Rv9ZmWMP3n8)
 - ["Even Faster CNNs: Exploring the New Class of Winograd Algorithms," a Presentation from Arm](https://www.youtube.com/watch?v=6lvzMB56Jnc)
 - [Using SGEMM and FFTs to Accelerate Deep Learning](https://www.youtube.com/watch?v=v5kAAjW17U4)
 
-### Suggested Readings 
+### Suggested Readings
+
 - [The Indirect Convolution Algorithm](https://arxiv.org/abs/1907.02129)
 - [Fast Sparse ConvNets](https://arxiv.org/abs/1911.09723)
 - [The Two-Pass Softmax Algorithm](https://arxiv.org/abs/2001.04438)
@@ -885,6 +900,7 @@ The final lesson is: **efficient AI software is not only about reducing FLOPs; i
 - [Efficient Memory Management for Deep Neural Net Inference](https://arxiv.org/abs/2001.03288)
 
 ### Micro-kernel Libraries
+
 - [FBGEMM](https://github.com/pytorch/FBGEMM)
 - [XNNPACK](https://github.com/google/xnnpack)
 - [KleidiAI](https://github.com/ARM-software/kleidiai)
