@@ -16,8 +16,6 @@ implementations, called **micro-kernels**. A micro-kernel is a small, specialize
 
 Schematically:
 
-Schematically:
-
 ```text
                      PyTorch
                         │
@@ -557,11 +555,7 @@ Estimate the operational intensity from these quantities.
 An important difference from vector addition is **data reuse**. Every element of `x` is used once for every row of `A`, so the same vector values participate in many output computations. This reuse can allow `x` to remain in a nearby
 cache while different rows of `A` are processed.
 
-Record the median latency and calculate:
-
-$\mathrm{GFLOP/s} = \frac{\mathrm{FLOPs}}{\mathrm{latency}}$.
-
-Also calculate the speedup relative to the scalar implementation.
+Complete the table below:
 
 | Variant | Latency (µs) | GFLOP/s | Speedup vs scalar |
 |---|---:|---:|---:|
@@ -619,7 +613,7 @@ for i:
 
 The inner loop is a dot product between a row of `A` and a column of `B`.
 
-For an `M × K` matrix multiplied by a `K × N` matrix, the computation requires approximately \[2MKN\] floating-point operations.
+For an `M × K` matrix multiplied by a `K × N` matrix, the computation requires approximately $2MKN$ floating-point operations.
 
 ### Tiling optimization
 
@@ -737,7 +731,7 @@ for b:
             Y[b,i,j] = sum
 ```
 
-The total computational work is approximately \[2BMKN\] FLOPs.
+The total computational work is approximately $2BMKN$ FLOPs.
 
 Implement the code of `gemm_batched_scalar` in `./src/gemm/batched_gemm.c`. 
 
@@ -782,7 +776,7 @@ With parallelism over batch items:
 With parallelism over output tiles, a single batch element can provide multiple independent tasks:
 
 ```text
-              Output matrix
+          Output matrix
         ┌───────┬───────┐
         │ Tile 0│ Tile 1│
         ├───────┼───────┤
@@ -797,7 +791,7 @@ With parallelism over output tiles, a single batch element can provide multiple 
 ```
 
 Complete the code of the two parallel batched version.  
-Then, build and run the OpenMP benchmark:
+Then, build and run the OpenMP benchmarks:
 
 ```bash
 make batched_gemm_bench_omp
@@ -815,16 +809,8 @@ SIMD executes multiple data operations simultaneously within a CPU core, while O
 
 ### Benchmarking
 
-Measure the following configurations for each batch size:
-
-- serial scalar GEMM;
-- serial tiled GEMM;
-- OpenMP over batch items; and
-- OpenMP over output tiles.
-
-Use `B = 1, 4, 16, 64` and compare one, two, and four OpenMP threads for the parallel implementations.
-
-Record the median latency, calculate GFLOP/s, and calculate the speedup relative to the scalar implementation.
+Compare performance of the different variants exploring `B = 1, 4, 16, 64`.
+Then, compile the table below:
 
 | B | Method | Threads | Tile | Latency (µs) | GFLOP/s | Speedup vs scalar | Observation |
 |---:|---|---:|---:|---:|---:|---:|---|
